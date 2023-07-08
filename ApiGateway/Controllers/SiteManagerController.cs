@@ -22,7 +22,7 @@ public class SiteManagerController : ControllerBase
 
             using (ServerManager serverManager = new ServerManager())
             {
-                SiteGenerator siteGenerator = new SiteGenerator(serverManager);
+                SiteManager siteGenerator = new SiteManager(serverManager);
                 siteGenerator
                     .CreateAppPool(site.AppPoolName)
                     .CreateSite(site.SiteName, site.AppPoolName)
@@ -48,7 +48,7 @@ public class SiteManagerController : ControllerBase
         {
             using (ServerManager serverManager = new ServerManager())
             {
-                SiteGenerator siteGenerator = new SiteGenerator(serverManager);
+                SiteManager siteGenerator = new SiteManager(serverManager);
                 siteGenerator
                     .RemoveAppPool(appPoolName)
                     .SaveChanges();
@@ -69,9 +69,51 @@ public class SiteManagerController : ControllerBase
         {
             using (ServerManager serverManager = new ServerManager())
             {
-                SiteGenerator siteGenerator = new SiteGenerator(serverManager);
+                SiteManager siteGenerator = new SiteManager(serverManager);
                 siteGenerator
                     .RemoveSite(siteName)
+                    .SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        return Ok();
+    }
+
+    [HttpPut("/StartSite")]
+    public ActionResult StartSite(string siteName)
+    {
+        try
+        {
+            using (ServerManager serverManager = new ServerManager())
+            {
+                SiteManager siteGenerator = new SiteManager(serverManager);
+                siteGenerator
+                    .StartSite(siteName)
+                    .SaveChanges();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+        return Ok();
+    }
+
+    [HttpPut("/StopSite")]
+    public ActionResult StopSite(string siteName)
+    {
+        try
+        {
+            using (ServerManager serverManager = new ServerManager())
+            {
+                SiteManager siteGenerator = new SiteManager(serverManager);
+                siteGenerator
+                    .StopSite(siteName)
                     .SaveChanges();
             }
         }

@@ -3,16 +3,16 @@ using System.Security.Cryptography.X509Certificates;
 
 namespace ApiGateway.Services;
 
-public class SiteGenerator
+public class SiteManager
 {
     ServerManager _ServerManager;
 
-    public SiteGenerator(ServerManager serverManager)
+    public SiteManager(ServerManager serverManager)
     {
         _ServerManager = serverManager;
     }
 
-    public SiteGenerator RemoveAppPool(string appPoolName)
+    public SiteManager RemoveAppPool(string appPoolName)
     {
         ApplicationPool? pool = _ServerManager.ApplicationPools
             .Where(x => x.Name == appPoolName)
@@ -25,7 +25,7 @@ public class SiteGenerator
         return this;
     }
 
-    public SiteGenerator CreateAppPool(string appPoolName, string runtime = "v4.0")
+    public SiteManager CreateAppPool(string appPoolName, string runtime = "v4.0")
     {
         ApplicationPool appPool = _ServerManager.ApplicationPools.CreateElement();
         appPool.Name = appPoolName;
@@ -36,7 +36,7 @@ public class SiteGenerator
         return this;
     }
 
-    public SiteGenerator RemoveSite(string siteName)
+    public SiteManager RemoveSite(string siteName)
     {
         Site? site = _ServerManager.Sites
             .Where(x => x.Name == siteName)
@@ -46,6 +46,32 @@ public class SiteGenerator
             return this;
 
         _ServerManager.Sites.Remove(site);
+        return this;
+    }
+
+    public SiteManager StartSite(string siteName)
+    {
+        Site? site = _ServerManager.Sites
+            .Where(x => x.Name == siteName)
+            .SingleOrDefault();
+
+        if (site == null)
+            return this;
+
+        site.Start();
+        return this;
+    }
+
+    public SiteManager StopSite(string siteName)
+    {
+        Site? site = _ServerManager.Sites
+            .Where(x => x.Name == siteName)
+            .SingleOrDefault();
+
+        if (site == null)
+            return this;
+
+        site.Stop();
         return this;
     }
 
@@ -61,10 +87,10 @@ public class SiteGenerator
 
     public class SiteUncompleted
     {
-        SiteGenerator _Generator;
+        SiteManager _Generator;
         Site _Site;
 
-        public SiteUncompleted(SiteGenerator generator, Site site)
+        public SiteUncompleted(SiteManager generator, Site site)
         {
             _Generator = generator;
             _Site = site;
@@ -101,7 +127,7 @@ public class SiteGenerator
             return this;
         }
 
-        public SiteGenerator CompleteSite()
+        public SiteManager CompleteSite()
         {
             _Generator._ServerManager.Sites.Add(_Site);
             return _Generator;
